@@ -9,4 +9,4 @@ First you need to get https://github.com/switchablenorms/DeepFashion2 then:
 
 `python deepfashion_to_tfrecords --dataset_path=deepfashion/train --num_shards=100 --output_folder=outputs`
 
-Check the results at [deepfashion to tfrecords](deepfashion_to_tfrecords.ipynb)
+Check the results at [deepfashion to tfrecords](read_with_tfdata.ipynb)
