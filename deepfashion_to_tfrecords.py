@@ -75,22 +75,25 @@ def tf_serialize_example(annos, image):
     return tf.reshape(tf_string, ())
 
 import os
+import time
 
-def main_converter(dataset_path, num_shards=100, output_folder="output_folder", limit=None) :
+def main_converter(dataset_path, num_shards=100, output_folder="output_folder", limit_per_shard=None) :
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
     both = read_raw_dataset(dataset_path)
-    total = len(both)
     
-    serialized_features_dataset = both.map(tf_serialize_example, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    
-    limited_dataset = serialized_features_dataset.take(limit) if limit is not None else serialized_features_dataset
     for i in range(num_shards):
-        print("Starting shard 1")
-        shard = limited_dataset.shard(num_shards=num_shards, index=i)
+        start = time.time()
+        print("Starting shard "+str(i))
+        shard = both.shard(num_shards=num_shards, index=i)
+        serialized_features_dataset = shard.map(tf_serialize_example, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+        
+        limited_dataset = serialized_features_dataset.take(limit_per_shard) if limit_per_shard is not None else serialized_features_dataset
+        
         writer = tf.data.experimental.TFRecordWriter(output_folder+f"/part_{i:03d}.tfrecord")
-        writer.write(shard)
-        print("Shard 1 done")
+        writer.write(limited_dataset)
+        duration = time.time() - start
+        print(f"Shard {str(i)} done in {str(duration)}s")
         
 if __name__ == '__main__':
     fire.Fire(main_converter)
