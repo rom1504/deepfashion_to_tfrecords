@@ -11,5 +11,6 @@ First you need to get https://github.com/switchablenorms/DeepFashion2 then:
 `pip install tensorflow fire`
 
 `python deepfashion_to_tfrecords --dataset_path=deepfashion/train --num_shards=100 --output_folder=outputs`
+It runs in 5min when using 20 cores
 
 Check the results at [deepfashion to tfrecords](read_with_tfdata.ipynb)
